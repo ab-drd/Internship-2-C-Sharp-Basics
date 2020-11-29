@@ -774,6 +774,7 @@ namespace ConsoleApp1
                                 temporaryList.Remove(temporaryList[randomIndex]);
                             }
                             Console.WriteLine("Playlista uspjesno randomizirana - Povratak na izbornik");
+                            stopArgument = 0;
                             break;
                         case 2:
                             Console.WriteLine("Povratak na izbornik");
