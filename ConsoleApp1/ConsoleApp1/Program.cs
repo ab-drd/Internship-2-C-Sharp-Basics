@@ -749,23 +749,41 @@ namespace ConsoleApp1
             }
             else
             {
-                var temporaryList = new List<int>();
-                var rnd = new Random(); var counter = 1;
-                var givenSize = givenPlaylist.Count;
-
-                for (var i = 1; i < givenSize + 1; i++)
+                var stopArgument = -1;
+                Console.WriteLine("Jeste li sigurni da zelite randomizirati playlistu?\n1 - da\n2 - ne, vrati me na izbornik");
+                while(stopArgument != 0)
                 {
-                    temporaryList.Add(i);
-                }
+                    var choice = int.Parse(Console.ReadLine());
+                    switch (choice)
+                    {
+                        case 1:
+                            var temporaryList = new List<int>();
+                            var rnd = new Random(); var counter = 1;
+                            var givenSize = givenPlaylist.Count;
 
-                while (temporaryList.Count != 0)
-                {
-                    var randomIndex = rnd.Next(temporaryList.Count);
-                    newPlaylist[counter] = givenPlaylist[temporaryList[randomIndex]];
-                    counter++;
-                    temporaryList.Remove(temporaryList[randomIndex]);
+                            for (var i = 1; i < givenSize + 1; i++)
+                            {
+                                temporaryList.Add(i);
+                            }
+
+                            while (temporaryList.Count != 0)
+                            {
+                                var randomIndex = rnd.Next(temporaryList.Count);
+                                newPlaylist[counter] = givenPlaylist[temporaryList[randomIndex]];
+                                counter++;
+                                temporaryList.Remove(temporaryList[randomIndex]);
+                            }
+                            Console.WriteLine("Playlista uspjesno randomizirana - Povratak na izbornik");
+                            break;
+                        case 2:
+                            Console.WriteLine("Povratak na izbornik");
+                            stopArgument = 0;
+                            break;
+                        default:
+                            Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                            break;
+                    }
                 }
-                Console.WriteLine("Playlista uspjesno randomizirana - Povratak na izbornik");
             }
             
             return newPlaylist;
