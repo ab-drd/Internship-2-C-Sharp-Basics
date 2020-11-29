@@ -19,7 +19,7 @@ namespace ConsoleApp1
                 Console.WriteLine("Odaberite akciju:\n1 - Ispis cijele liste\n2 - Ispis imena pjesme unosom pripadajuceg rednog broja" +
                 "\n3 - Ispis rednog broja pjesme unosom pripadajuceg imena\n4 - Unos nove pjesme\n5 - Brisanje pjesme po rednom broju" +
                 "\n6 - Brisanje pjesme po imenu\n7 - Brisanje cijele liste\n8 - Uredivanje imena pjesme" +
-                "\n9 - Uredivanje rednog broja pjesme\n0 - izlaz iz aplikacije\n");
+                "\n9 - Uredivanje rednog broja pjesme\n10 - Shuffle\n0 - izlaz iz aplikacije\n");
                 caseSwitch = int.Parse(Console.ReadLine());
                 switch (caseSwitch)
                 {
@@ -46,6 +46,12 @@ namespace ConsoleApp1
                         break;
                     case 8:
                         EditSongName(playlist);
+                        break;
+                    case 9:
+                        EditSongNumber(playlist);
+                        break;
+                    case 10:
+                        playlist = ShufflePlaylist(playlist);
                         break;
                     default:
                         Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
@@ -137,7 +143,7 @@ namespace ConsoleApp1
                     if (!givenPlaylist.ContainsValue(nameOfPrint))
                     {
                         Console.WriteLine("Nije pronadjena pjesma {0}", nameOfPrint);
-                        Console.WriteLine("Zelite li ponovno unijeti redni broj pjesme koju zelite ispisati?\n1 - da\n2 - ne, vrati me na izbornik");
+                        Console.WriteLine("Zelite li ponovno unijeti ime pjesme koju zelite ispisati?\n1 - da\n2 - ne, vrati me na izbornik");
                         while (satisfied != 0)
                         {
                             choice = int.Parse(Console.ReadLine());
@@ -356,37 +362,44 @@ namespace ConsoleApp1
         static void RemoveSong_All(Dictionary<int, string> givenPlaylist)
         {
             var choice = 0; var shouldIStop = -1;
-            Console.WriteLine("Jeste li sigurni da zelite izbrisati cijelu playlistu?\n1 - da\n2 - ne, vrati me na izbornik");
-            while (shouldIStop != 0)
-            {
-                choice = int.Parse(Console.ReadLine());
-                switch (choice)
-                {
-                    case 1:
-                        givenPlaylist.Clear();
-                        Console.WriteLine("Cijela playlista uspjesno izbrisana.");
-                        shouldIStop = 0;
-                        break;
-                    case 2:
-                        Console.WriteLine("Playlista nije izbrisana.");
-                        shouldIStop = 0;
-                        break;
-                    default:
-                        Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
-                        break;
-                }
-            }
-        }
-
-        static void EditSongName(Dictionary<int, string> givenPlaylist)
-        {
-            var choice = -1; var shouldIStop = -1;
             if (givenPlaylist.Count == 0)
             {
                 Console.WriteLine("Playlista je prazna! Povratak na izbornik.");
             }
             else
             {
+                Console.WriteLine("Jeste li sigurni da zelite izbrisati cijelu playlistu?\n1 - da\n2 - ne, vrati me na izbornik");
+                while (shouldIStop != 0)
+                {
+                    choice = int.Parse(Console.ReadLine());
+                    switch (choice)
+                    {
+                        case 1:
+                            givenPlaylist.Clear();
+                            Console.WriteLine("Cijela playlista uspjesno izbrisana.");
+                            shouldIStop = 0;
+                            break;
+                        case 2:
+                            Console.WriteLine("Playlista nije izbrisana.");
+                            shouldIStop = 0;
+                            break;
+                        default:
+                            Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                            break;
+                    }
+                }
+            }
+        }
+
+        static void EditSongName(Dictionary<int, string> givenPlaylist)
+        {
+            if (givenPlaylist.Count == 0)
+            {
+                Console.WriteLine("Playlista je prazna! Povratak na izbornik.");
+            }
+            else
+            {
+                var choice = -1; var shouldIStop = -1;
                 Console.WriteLine("Zelite li dohvatiti pjesmu po imenu ili po rednom broju?\n1 - dohvacanje po rednom broju\n2 - dohvacanje po imenu\n0 - povratak na izbornik");
                 while (shouldIStop != 0)
                 {
@@ -398,7 +411,7 @@ namespace ConsoleApp1
                             shouldIStop = 0;
                             break;
                         case 2:
-                            var name = Console.ReadLine();
+                            EditSongName_Song(givenPlaylist);
                             shouldIStop = 0;
                             break;
                         case 0:
@@ -476,8 +489,10 @@ namespace ConsoleApp1
                                             break;
                                         case 0:
                                             Console.WriteLine("Povratak na izbornik");
+                                            stopParameter = 0; argument = 0; runningOutOfNames = 0;
                                             break;
                                         default:
+                                            Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
                                             break;
                                     }
                                 }
@@ -485,6 +500,102 @@ namespace ConsoleApp1
                             break;
                         case 2:
                             Console.WriteLine("Unesite redni broj pjesme koju zelite izmijeniti:");
+                            break;
+                        case 0:
+                            Console.WriteLine("Povratak na izbornik");
+                            stopParameter = 0; 
+                            break;
+                        default:
+                            Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                            break;
+                    }
+                }
+            }
+        }
+
+        static void EditSongName_Song(Dictionary<int, string> givenPlaylist)
+        {
+            var stopParameter = -1;
+            Console.WriteLine("Unesite ime pjesme kojoj zelite mijenjati ime:");
+            while (stopParameter != 0)
+            {
+                var songName = Console.ReadLine();
+                if (!givenPlaylist.ContainsValue(songName))
+                {
+                    var satisfied = -1;
+                    Console.WriteLine("Nije pronadjena pjesma imena '{0}'", songName);
+                    Console.WriteLine("Zelite li ponovno unijeti ime pjesme koju zelite izmijeniti?\n1 - da\n2 - ne, vrati me na izbornik");
+                    while (satisfied != 0)
+                    {
+                        var choose = int.Parse(Console.ReadLine());
+                        switch (choose)
+                        {
+                            case 2:
+                                satisfied = 0;
+                                break;
+                            case 1:
+                                Console.WriteLine("Unesite ime pjesme kojoj zelite mijenjati ime:");
+                                satisfied = 0;
+                                break;
+                            default:
+                                Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Jeste li sigurni da zelite izmijeniti pjesmu na imena '{0}' u playlisti?\n1 - da, izmijeni ime pjesme" +
+                                       "\n2 - ne, vrati me na ponovni unos\n0 - ne, vrati me u izbornik", songName);
+                    var choice = int.Parse(Console.ReadLine());
+                    switch (choice)
+                    {
+                        case 1:
+                            var index = 0; var argument = -1; 
+                            foreach (KeyValuePair<int, string> kvp in givenPlaylist)
+                            {
+                                if (kvp.Value == songName)
+                                {
+                                    index = kvp.Key;
+                                    break;
+                                }
+                            }
+                            var oldName = givenPlaylist[index]; var newName = "";
+                            Console.WriteLine("Na pjesma '{0}' nalazi se na rednom broju {1}. Unesite novo ime pjesme:", oldName, index);
+                            while (argument != 0)
+                            {
+                                var runningOutOfNames = -1;
+                                newName = Console.ReadLine();
+                                Console.WriteLine("Jeste li sigurni da zelite izmijeniti pjesmu na rednom broju {0} u playlisti iz '{1}' u '{2}'?\n1 - da, izmijeni ime pjesme" +
+                                       "\n2 - ne, vrati me na ponovni unos\n0 - ne, vrati me u izbornik", index, oldName, newName);
+                                while (runningOutOfNames != 0)
+                                {
+                                    var option = int.Parse(Console.ReadLine());
+                                    switch (option)
+                                    {
+                                        case 1:
+                                            givenPlaylist.Remove(index);
+                                            givenPlaylist[index] = newName;
+                                            Console.WriteLine("Pjesma '{0}' na rednom broju {1} uspjesno izmijenjena u {2}.", index, oldName, newName);
+                                            stopParameter = 0; argument = 0; runningOutOfNames = 0;
+                                            break;
+                                        case 2:
+                                            Console.WriteLine("Unesite ime pjesme koju zelite izmijeniti:");
+                                            runningOutOfNames = 0; argument = 0;
+                                            break;
+                                        case 0:
+                                            Console.WriteLine("Povratak na izbornik");
+                                            stopParameter = 0; argument = 0; runningOutOfNames = 0;
+                                            break;
+                                        default:
+                                            Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                                            break;
+                                    }
+                                }
+                            }
+                            break;
+                        case 2:
+                            Console.WriteLine("Unesite ime pjesme koju zelite izmijeniti:");
                             break;
                         case 0:
                             Console.WriteLine("Povratak na izbornik");
@@ -497,7 +608,167 @@ namespace ConsoleApp1
                 }
             }
         }
+
+        static void EditSongNumber(Dictionary<int, string> givenPlaylist)
+        {
+            if (givenPlaylist.Count == 0)
+            {
+                Console.WriteLine("Playlista je prazna! Povratak na izbornik.");
+            }
+            else
+            {
+                var stopParameter = -1;
+                Console.WriteLine("Unesite redni broj pjesme kojoj zelite mijenjati redni broj:");
+                while (stopParameter != 0)
+                {
+                    var index = int.Parse(Console.ReadLine());
+                    if (!givenPlaylist.ContainsKey(index))
+                    {
+                        var satisfied = -1;
+                        Console.WriteLine("Nije pronadjena pjesma na rednom broju {0}", index);
+                        Console.WriteLine("Zelite li ponovno unijeti redni broj pjesme kojoj zelite izmijeniti redni broj?\n1 - da\n2 - ne, vrati me na izbornik");
+                        while (satisfied != 0)
+                        {
+                            var choose = int.Parse(Console.ReadLine());
+                            switch (choose)
+                            {
+                                case 2:
+                                    satisfied = 0;
+                                    break;
+                                case 1:
+                                    Console.WriteLine("Unesite redni broj pjesme kojoj zelite mijenjati redni broj:");
+                                    satisfied = 0;
+                                    break;
+                                default:
+                                    Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var stopParameter2 = -1;
+                        Console.WriteLine("Jeste li sigurni da zelite izmijeniti redni broj pjesme '{0}' na rednom broju {1} u playlisti?\n1 - da, izmijeni redni broj pjesme" +
+                                       "\n2 - ne, vrati me na ponovni unos\n0 - ne, vrati me u izbornik", givenPlaylist[index], index);
+                        var choice = int.Parse(Console.ReadLine());
+                        while(stopParameter2 != 0)
+                        {
+                            switch (choice)
+                            {
+                                case 1:
+                                    var songName = givenPlaylist[index];
+                                    Console.WriteLine("Unesite novi redni broj pjesme '{0}' (trenutno na broju {1}) - " +
+                                        "neka novi redni broj bude cijeli broj od 1 do {2}", songName, index, givenPlaylist.Count);
+                                    var newIndex = int.Parse(Console.ReadLine()); var stopParameter3 = -1;
+
+                                    while (stopParameter3 != 0 && (newIndex < 0 || newIndex > givenPlaylist.Count)) //unos pravilnog novog indexa
+                                    {
+                                        Console.WriteLine("Novi redni broj {0} je izvan dozvoljenih granica od 1 do {1}. Zelite li unijeti novi redni broj?" +
+                                            "\n1 - da, zelim unijeti novi redni broj\n2 - ne, vrati me na izbornik", newIndex, givenPlaylist.Count); var stopParameter4 = -1;
+                                        while (stopParameter4 != 0)
+                                        {
+                                            var choice4 = int.Parse(Console.ReadLine());
+                                            switch (choice4)
+                                            {
+                                                case 1:
+                                                    Console.WriteLine("Unesite novi redni broj pjesme '{0}' (trenutno na broju {1}) - " +
+                                                    "neka novi redni broj bude cijeli broj od 1 do {2}", givenPlaylist[index], index, givenPlaylist.Count);
+                                                    newIndex = int.Parse(Console.ReadLine());
+                                                    stopParameter4 = 0;
+                                                    break;
+                                                case 2:
+                                                    stopParameter4 = 0; stopParameter3 = 0; stopParameter2 = 0; stopParameter = 0;
+                                                    break;
+                                                default:
+                                                    Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                                                    break;
+                                            }
+                                        }
+                                    }
+
+                                    if (newIndex == index)
+                                    {
+                                        Console.WriteLine("Novi redni broj pjesme je jednak starom - nema promjene - Povratak na izbornik");
+                                    }
+                                    else if (newIndex < index)
+                                    {
+                                        var temporary = givenPlaylist[newIndex];
+                                        givenPlaylist.Remove(index);
+                                        givenPlaylist[newIndex] = songName; songName = temporary;
+                                        for (var i = newIndex+1; i < index; i++)
+                                        {
+                                            temporary = givenPlaylist[i];
+                                            givenPlaylist.Remove(i);
+                                            givenPlaylist[i] = songName;
+                                            songName = temporary;
+                                        }
+                                        givenPlaylist[index] = songName;
+                                        Console.WriteLine("Uspjesno izvrsena zamjena rednog broja, slijedi povratak na izbornik");
+                                    }
+                                    else
+                                    {
+                                        var temporary = givenPlaylist[newIndex];
+                                        givenPlaylist.Remove(index);
+                                        givenPlaylist[newIndex] = songName; songName = temporary;
+                                        for (var i = newIndex-1; i > index; i--)
+                                        {
+                                            temporary = givenPlaylist[i];
+                                            givenPlaylist.Remove(i);
+                                            givenPlaylist[i] = songName;
+                                            songName = temporary;
+                                        }
+                                        givenPlaylist[index] = songName;
+                                        Console.WriteLine("Uspjesno izvrsena zamjena rednog broja, slijedi povratak na izbornik");
+                                    }
+                                    stopParameter = 0;  stopParameter2 = 0; 
+                                    break;
+                                case 2:
+                                    Console.WriteLine("Unesite redni broj pjesme kojoj zelite mijenjati redni broj:");
+                                    stopParameter2 = 0;
+                                    break;
+                                case 0:
+                                    Console.WriteLine("Povratak na izbornik");
+                                    stopParameter = 0; stopParameter2 = 0;
+                                    break;
+                                default:
+                                    Console.WriteLine("Unesena je akcija koja nije na listi. Molimo ponovno unesite akciju.");
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        static Dictionary<int, string> ShufflePlaylist(Dictionary<int, string> givenPlaylist)
+        {
+            var newPlaylist = new Dictionary<int, string>();
+            if (givenPlaylist.Count == 0)
+            {
+                Console.WriteLine("Playlista je prazna! Povratak na izbornik.");
+            }
+            else
+            {
+                var temporaryList = new List<int>();
+                var rnd = new Random(); var counter = 1;
+                var givenSize = givenPlaylist.Count;
+
+                for (var i = 1; i < givenSize + 1; i++)
+                {
+                    temporaryList.Add(i);
+                }
+
+                while (temporaryList.Count != 0)
+                {
+                    var randomIndex = rnd.Next(temporaryList.Count);
+                    newPlaylist[counter] = givenPlaylist[temporaryList[randomIndex]];
+                    counter++;
+                    temporaryList.Remove(temporaryList[randomIndex]);
+                }
+                Console.WriteLine("Playlista uspjesno randomizirana - Povratak na izbornik");
+            }
+            
+            return newPlaylist;
+        }
     }
 }
-
-
